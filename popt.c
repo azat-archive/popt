@@ -1023,8 +1023,13 @@ int poptSaveLongLong(long long * arg, unsigned int argInfo, long long aLongLong)
 
 int poptSaveLong(long * arg, unsigned int argInfo, long aLong)
 {
+#if 0
     /* XXX Check alignment, may fail on funky platforms. */
     if (arg == NULL || (((unsigned long)arg) & (sizeof(*arg)-1)))
+#else
+    /* It does! pm@debian.org */
+    if (arg == NULL)
+#endif
 	return POPT_ERROR_NULLARG;
 
     if (aLong != 0 && LF_ISSET(RANDOM)) {
@@ -1056,8 +1061,13 @@ int poptSaveLong(long * arg, unsigned int argInfo, long aLong)
 
 int poptSaveInt(/*@null@*/ int * arg, unsigned int argInfo, long aLong)
 {
+#if 0
     /* XXX Check alignment, may fail on funky platforms. */
     if (arg == NULL || (((unsigned long)arg) & (sizeof(*arg)-1)))
+#else
+    /* It does! pm@debian.org */
+    if (arg == NULL)
+#endif
 	return POPT_ERROR_NULLARG;
 
     if (aLong != 0 && LF_ISSET(RANDOM)) {
