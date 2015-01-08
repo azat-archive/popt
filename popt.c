@@ -184,6 +184,7 @@ poptContext poptGetContext(const char * name, int argc, const char ** argv,
 	con->os->next = 1;		/* skip argv[0] */
 
     con->leftovers = calloc( (size_t)(argc + 1), sizeof(*con->leftovers) );
+    con->allocLeftovers = argc + 1;
 /*@-dependenttrans -assignexpose@*/	/* FIX: W2DO? */
     con->options = options;
 /*@=dependenttrans =assignexpose@*/
@@ -1358,7 +1359,19 @@ int poptGetNextOpt(poptContext con)
 		    return 0;
 		}
 		if (con->leftovers != NULL)	/* XXX can't happen */
-		    con->leftovers[con->numLeftovers++] = origOptString;
+		    /* One might think we can never overflow the leftovers
+		       array.  Actually, that's true, as long as you don't
+		       use poptStuffArgs()... */
+		    if ((con->numLeftovers + 1) >= (con->allocLeftovers)) {
+			con->allocLeftovers += 10;
+			con->leftovers =
+			    realloc(con->leftovers,
+				    sizeof(*con->leftovers) * con->allocLeftovers);
+		    }
+		    con->leftovers[con->numLeftovers++]
+			= xstrdup(origOptString); /* so a free of a stuffed
+						     argv doesn't give us a
+						     dangling pointer */
 		continue;
 	    }
 
@@ -1612,6 +1625,8 @@ poptItem poptFreeItems(/*@only@*/ /*@null@*/ poptItem items, int nitems)
 
 poptContext poptFreeContext(poptContext con)
 {
+    int i;
+
     if (con == NULL) return con;
     poptResetContext(con);
     con->os->argb = _free(con->os->argb);
@@ -1622,7 +1637,11 @@ poptContext poptFreeContext(poptContext con)
     con->execs = poptFreeItems(con->execs, con->numExecs);
     con->numExecs = 0;
 
+    for (i = 0; i < con->numLeftovers; i++) {
+	con->leftovers[i] = _free(&con->leftovers[i]);
+    }
     con->leftovers = _free(con->leftovers);
+
     con->finalArgv = _free(con->finalArgv);
     con->appName = _free(con->appName);
     con->otherHelp = _free(con->otherHelp);
