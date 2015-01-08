@@ -2765,7 +2765,7 @@ LT_REVISION=0
 LT_AGE=8
 
 
-ALL_LINGUAS="cs da de eo es fi fr ga gl hu id is it ja ko lv nb nl pl pt ro ru sk sl sv th tr uk vi wa zh_TW zh_CN"
+ALL_LINGUAS="ca cs da de eo es fi fr ga gl hu id is it ja ko lv nb nl pl pt ro ru sk sl sv th tr uk vi wa zh_TW zh_CN"
 
 DEPDIR="${am__leading_dot}deps"
 
