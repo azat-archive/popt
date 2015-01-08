@@ -46,7 +46,6 @@ AC_GCC_TRADITIONAL
 AC_SYS_LARGEFILE
 
 AC_ISC_POSIX
-AM_C_PROTOTYPES
 
 AC_CHECK_HEADERS(float.h fnmatch.h glob.h langinfo.h libintl.h mcheck.h unistd.h)
 
